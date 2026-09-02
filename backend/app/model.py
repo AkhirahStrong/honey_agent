@@ -4,7 +4,7 @@ import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
-
+from app.tools import read_document
 
 # Load variables stored in our .env file.
 load_dotenv()
@@ -20,6 +20,21 @@ client = OpenAI(
     api_key=api_key
 )
 
+TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "read_document",
+            "description": "Reads the internal company document.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        }
+    }
+]
+
 def ask_model(prompt):
     """
     Sends a prompt to the language model
@@ -34,19 +49,40 @@ def ask_model(prompt):
                 "content": """
 You are an internal assistant for a fictional company.
 
-Your job is to help employees understand internal company information.
+You have access to a tool named read_document.
 
-When given company documents, answer questions using only the information
-provided in those documents.
+When a user asks about company policies, employee rules,
+or internal company information, use the read_document tool
+before answering.
 
-If the answer is not in the document, say you do not know.
+Do not guess company information.
 """
             },
             {
                 "role": "user",
                 "content": prompt
             }
-        ]
+        ],
+        tools=TOOLS
     )
 
-    return response.choices[0].message.content
+    # return response.choices[0].message.content
+    message =response.choices[0].message
+    # return response
+    
+    # 3. Check if the LLM requested a tool
+    if message.tool_calls:
+        print("The model requested a tool.")
+
+        tool_call = message.tool_calls[0]
+
+        print(tool_call.function.name)
+        
+        if tool_call.function.name == "read_document":
+         tool_result = read_document()
+
+        print(tool_result)
+
+
+    # 4. Return the message
+    return message
