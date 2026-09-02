@@ -29,6 +29,19 @@ def ask_model(prompt):
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=[
+           {
+                "role": "system",
+                "content": """
+You are an internal assistant for a fictional company.
+
+Your job is to help employees understand internal company information.
+
+When given company documents, answer questions using only the information
+provided in those documents.
+
+If the answer is not in the document, say you do not know.
+"""
+            },
             {
                 "role": "user",
                 "content": prompt
