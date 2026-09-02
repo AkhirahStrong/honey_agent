@@ -514,7 +514,7 @@ The project is intentionally being developed in small steps so each component ca
 - [x] Basic model conversation
 - [x] Tool calling
 - [x] Agent tool loop
-- [ ] Multi-step tasks
+- [x] Multi-step tasks
 
 ### Synthetic Environment
 
