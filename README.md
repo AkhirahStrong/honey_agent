@@ -510,10 +510,10 @@ The project is intentionally being developed in small steps so each component ca
 
 ### Agent
 
-- [ ] Connect hosted LLM
-- [ ] Basic model conversation
-- [ ] Tool calling
-- [ ] Agent tool loop
+- [x] Connect hosted LLM
+- [x] Basic model conversation
+- [x] Tool calling
+- [x] Agent tool loop
 - [ ] Multi-step tasks
 
 ### Synthetic Environment
