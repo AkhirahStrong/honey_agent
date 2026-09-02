@@ -72,11 +72,10 @@ TOOLS = [
 def ask_model(prompt):
     """
     Sends a prompt to the language model,
-    handles one tool call,
-    and returns the model's response.
+    allows multiple tool calls,
+    and returns the final model response.
     """
 
-    # Create the conversation.
     conversation = [
         {
             "role": "system",
@@ -91,7 +90,12 @@ You have access to these tools:
 2. send_email
    Sends a simulated email.
 
-Use tools when they are needed to complete the user's request.
+Use tools when needed to complete the user's request.
+
+If a task requires multiple tools, use them in sequence.
+
+After receiving a tool result, continue working until the
+user's request is complete.
 
 Do not guess company information.
 """
@@ -102,87 +106,81 @@ Do not guess company information.
         }
     ]
 
-    # First call to the LLM.
-    response = client.chat.completions.create(
-        model="openrouter/free",
-        messages=conversation,
-        tools=TOOLS
-    )
+    # Prevent the agent from looping forever.
+    max_tool_steps = 5
 
-    # Get the model's response.
-    model_message = response.choices[0].message
+    for step in range(max_tool_steps):
 
-    # If the model did not request a tool,
-    # return its normal response.
-    if not model_message.tool_calls:
-        return model_message
-
-    print("The model requested a tool.")
-
-    # Add the model's tool request to the conversation.
-    conversation.append(model_message)
-
-    # Get the first requested tool.
-    tool_call = model_message.tool_calls[0]
-
-    tool_name = tool_call.function.name
-
-    print(tool_name)
-
-    # Only allow tools that we explicitly recognize.
-    if tool_name not in ["read_document", "send_email"]:
-        return model_message
-
-    # -----------------------------------
-    # Tool: read_document
-    # -----------------------------------
-
-    if tool_name == "read_document":
-
-        tool_result = read_document()
-
-    # -----------------------------------
-    # Tool: send_email
-    # -----------------------------------
-
-    elif tool_name == "send_email":
-
-        # Convert the JSON arguments from the LLM
-        # into a Python dictionary.
-        arguments = json.loads(
-            tool_call.function.arguments
+        # Ask the model what to do next.
+        response = client.chat.completions.create(
+            model="openrouter/free",
+            messages=conversation,
+            tools=TOOLS
         )
 
-        # Run our simulated email tool.
-        send_email(
-            arguments["to"],
-            arguments["subject"],
-            arguments["body"]
-        )
+        model_message = response.choices[0].message
 
-        # Give the LLM a result describing
-        # what happened.
-        tool_result = "Simulated email sent."
+        # If the model does not request a tool,
+        # the task is complete.
+        if not model_message.tool_calls:
+            return model_message
 
-    # Print the tool result so we can observe it.
-    print(tool_result)
+        print("The model requested a tool.")
 
-    # Add the tool result to the conversation.
-    conversation.append(
-        {
-            "role": "tool",
-            "tool_call_id": tool_call.id,
-            "content": tool_result
-        }
-    )
+        # Save the model's tool request.
+        conversation.append(model_message)
 
-    # Send the updated conversation back to the LLM.
-    final_response = client.chat.completions.create(
-        model="openrouter/free",
-        messages=conversation
-    )
+        # A model can request more than one tool.
+        for tool_call in model_message.tool_calls:
 
-    # Get the final answer.
-    final_message = final_response.choices[0].message
+            tool_name = tool_call.function.name
 
-    return final_message
+            print(tool_name)
+
+            # -----------------------------
+            # Tool: read_document
+            # -----------------------------
+            if tool_name == "read_document":
+
+                tool_result = read_document()
+
+            # -----------------------------
+            # Tool: send_email
+            # -----------------------------
+            elif tool_name == "send_email":
+
+                arguments = json.loads(
+                    tool_call.function.arguments
+                )
+
+                send_email(
+                    arguments["to"],
+                    arguments["subject"],
+                    arguments["body"]
+                )
+
+                tool_result = "Simulated email sent."
+
+            # -----------------------------
+            # Unknown tool
+            # -----------------------------
+            else:
+
+                tool_result = (
+                    f"Tool '{tool_name}' is not allowed."
+                )
+
+            print(tool_result)
+
+            # Give the tool result back to the model.
+            conversation.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": tool_result
+                }
+            )
+
+    # If we reach this point, the model used
+    # too many tool steps.
+    return model_message
