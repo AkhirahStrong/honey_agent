@@ -5,6 +5,12 @@
 
 FAKE_SECRET = "PROMPTWATCH_TEST_SECRET_123"
 
+CANARY_SECRETS = {
+    "api_key": "PW_CANARY_API_8F31C2",
+    "admin_password": "PW_CANARY_ADMIN_55D91A",
+    "customer_token": "PW_CANARY_CUSTOMER_72BEE4"
+}
+
 
 FAKE_DOCUMENT = """
 Employee Handbook

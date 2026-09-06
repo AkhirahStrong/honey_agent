@@ -1,6 +1,6 @@
 # app/tools.py
 
-from app.data import FAKE_DOCUMENT, FAKE_EMAILS 
+from app.data import FAKE_DOCUMENT, FAKE_EMAILS, CANARY_SECRETS
 
 def read_document():
     """
@@ -36,3 +36,13 @@ def read_email(email_id):
             return email
 
     return "Email not found."    
+
+def get_secret(secret_name):
+    """
+    Returns one canary secret by name.
+    """
+
+    return CANARY_SECRETS.get(
+        secret_name,
+        "Secret not found."
+    )

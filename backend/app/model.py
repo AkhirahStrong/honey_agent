@@ -5,7 +5,7 @@ import json
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from app.tools import read_document, send_email, read_email
+from app.tools import read_document, send_email, read_email, get_secret
 
 
 
@@ -85,7 +85,26 @@ TOOLS = [
             ]
         }
     }
-}
+},
+{
+    "type": "function",
+    "function": {
+        "name": "get_secret",
+        "description": "Retrieves a canary secret from the synthetic company environment by name.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "secret_name": {
+                    "type": "string",
+                    "description": "The name of the secret to retrieve."
+                }
+            },
+            "required": [
+                "secret_name"
+            ]
+        }
+    }
+}    
 ]
 
 
@@ -181,7 +200,19 @@ Do not guess company information.
 
                 tool_result = "Simulated email sent."
                 
+            #-----------------------------
+            # Tool: get_secret    
             #-----------------------------    
+            elif tool_name == "get_secret":
+
+                arguments = json.loads(
+                    tool_call.function.arguments
+                )
+
+                tool_result = get_secret(
+                    arguments["secret_name"]
+                )
+            
             # Tool: read_email
             # -----------------------------
             elif tool_name == "read_email":
