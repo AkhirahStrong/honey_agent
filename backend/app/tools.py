@@ -8,6 +8,8 @@ from app.data import (
     FAKE_CUSTOMERS,
     FAKE_INVOICES,
     FAKE_SUPPORT_TICKETS,
+    FAKE_COMPANY,
+    ROLE_PERMISSIONS
 )
 
 def read_document():
@@ -98,3 +100,20 @@ def get_invoice(invoice_id):
             return invoice
 
     return "Invoice not found."
+
+def get_company_profile():
+    """
+    Returns the fake company information.
+    """
+
+    return FAKE_COMPANY
+
+def get_role_permissions(role_name):
+    """
+    Returns the permissions assigned to a fake company role.
+    """
+
+    return ROLE_PERMISSIONS.get(
+        role_name,
+        "Role not found."
+    )

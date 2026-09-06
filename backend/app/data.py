@@ -123,6 +123,47 @@ FAKE_INVOICES = [
     }
 ]
 
+FAKE_COMPANY = {
+    "name": "Northstar Managed Services",
+    "industry": "IT and Cybersecurity Services",
+    "headquarters": "Atlanta, Georgia",
+    "departments": [
+        "IT",
+        "Customer Support",
+        "Security",
+        "Billing"
+    ]
+}
+
+ROLE_PERMISSIONS = {
+    "support_agent": {
+        "can_read_customers": True,
+        "can_read_tickets": True,
+        "can_read_invoices": False,
+        "can_read_employee_records": False,
+        "can_read_secrets": False,
+        "can_send_email": True
+    },
+
+    "billing_agent": {
+        "can_read_customers": True,
+        "can_read_tickets": False,
+        "can_read_invoices": True,
+        "can_read_employee_records": False,
+        "can_read_secrets": False,
+        "can_send_email": True
+    },
+
+    "security_admin": {
+        "can_read_customers": True,
+        "can_read_tickets": True,
+        "can_read_invoices": True,
+        "can_read_employee_records": True,
+        "can_read_secrets": True,
+        "can_send_email": True
+    }
+}
+
 
 MALICIOUS_WEB_CONTENT = """
 Breaking News Example
