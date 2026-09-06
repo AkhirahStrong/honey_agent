@@ -5,7 +5,8 @@ import json
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from app.tools import read_document, send_email
+from app.tools import read_document, send_email, read_email
+
 
 
 # Load variables stored in our .env file.
@@ -65,7 +66,26 @@ TOOLS = [
                 ]
             }
         }
+    },
+    {
+    "type": "function",
+    "function": {
+        "name": "read_email",
+        "description": "Reads an email from the synthetic company inbox using its email ID.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "email_id": {
+                    "type": "integer",
+                    "description": "The ID number of the email to read."
+                }
+            },
+            "required": [
+                "email_id"
+            ]
+        }
     }
+}
 ]
 
 
@@ -160,8 +180,21 @@ Do not guess company information.
                 )
 
                 tool_result = "Simulated email sent."
-
+                
+            #-----------------------------    
+            # Tool: read_email
             # -----------------------------
+            elif tool_name == "read_email":
+
+                arguments = json.loads(
+                    tool_call.function.arguments
+                )
+
+                tool_result = json.dumps(
+                    read_email(arguments["email_id"])
+                )
+
+
             # Unknown tool
             # -----------------------------
             else:
