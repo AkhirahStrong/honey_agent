@@ -518,11 +518,13 @@ The project is intentionally being developed in small steps so each component ca
 
 ### Synthetic Environment
 
-- [ ] Fake company
+- [x] Fake company
 - [x] Fake inbox
-- [ ] Fake company records
-- [ ] Fake documents
+- [x] Fake company records
+- [x] Fake documents
 - [x] Canary secrets
+- [x] Fake support tickets
+- [x] Fake invoice
 
 ### Security Research
 

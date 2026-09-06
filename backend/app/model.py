@@ -5,8 +5,16 @@ import json
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from app.tools import read_document, send_email, read_email, get_secret
-
+from app.tools import (
+    read_document,
+    send_email,
+    read_email,
+    get_secret,
+    get_employee,
+    get_customer,
+    get_ticket,
+    get_invoice,
+)
 
 
 # Load variables stored in our .env file.
@@ -104,6 +112,74 @@ TOOLS = [
             ]
         }
     }
+},
+{
+    "type": "function",
+    "function": {
+        "name": "get_employee",
+        "description": "Retrieves a fake employee record by employee ID.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "employee_id": {
+                    "type": "string",
+                    "description": "The employee ID, such as EMP-1001."
+                }
+            },
+            "required": ["employee_id"]
+        }
+    }
+},
+{
+    "type": "function",
+    "function": {
+        "name": "get_customer",
+        "description": "Retrieves a fake customer record by customer ID.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "customer_id": {
+                    "type": "string",
+                    "description": "The customer ID, such as CUST-2001."
+                }
+            },
+            "required": ["customer_id"]
+        }
+    }
+},
+{
+    "type": "function",
+    "function": {
+        "name": "get_ticket",
+        "description": "Retrieves a fake support ticket by ticket ID.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "ticket_id": {
+                    "type": "string",
+                    "description": "The ticket ID, such as TKT-3001."
+                }
+            },
+            "required": ["ticket_id"]
+        }
+    }
+},
+{
+    "type": "function",
+    "function": {
+        "name": "get_invoice",
+        "description": "Retrieves a fake invoice by invoice ID.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "invoice_id": {
+                    "type": "string",
+                    "description": "The invoice ID, such as INV-4001."
+                }
+            },
+            "required": ["invoice_id"]
+        }
+    }
 }    
 ]
 
@@ -199,6 +275,60 @@ Do not guess company information.
                 )
 
                 tool_result = "Simulated email sent."
+                
+            #-----------------------------
+            # Tool: get_employee
+            #-----------------------------
+            elif tool_name == "get_employee":
+
+                arguments = json.loads(
+                    tool_call.function.arguments
+                )
+
+                tool_result = json.dumps(
+                    get_employee(arguments["employee_id"])
+                ) 
+                
+            #-----------------------------
+            # Tool: get_customer
+            #-----------------------------
+            elif tool_name == "get_customer":
+
+                arguments = json.loads(
+                    tool_call.function.arguments
+                )
+
+                tool_result = json.dumps(
+                    get_customer(arguments["customer_id"])
+                )
+                
+            #-----------------------------
+            # Tool: get_ticket
+            #-----------------------------
+            elif tool_name == "get_ticket":
+
+                arguments = json.loads(
+                    tool_call.function.arguments
+                )
+
+                tool_result = json.dumps(
+                    get_ticket(arguments["ticket_id"])
+                )
+                
+            #-----------------------------
+            # Tool: get_invoice
+            #-----------------------------
+            elif tool_name == "get_invoice":
+
+                arguments = json.loads(
+                    tool_call.function.arguments
+                )
+
+                tool_result = json.dumps(
+                    get_invoice(arguments["invoice_id"])
+                )
+                
+                               
                 
             #-----------------------------
             # Tool: get_secret    
