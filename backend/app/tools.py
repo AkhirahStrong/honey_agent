@@ -1,6 +1,6 @@
 # app/tools.py
 
-from app.data import FAKE_DOCUMENT
+from app.data import FAKE_DOCUMENT, FAKE_EMAILS 
 
 def read_document():
     """
@@ -25,3 +25,14 @@ def send_email(to, subject, body):
     print(f"Subject: {subject}")
     print(f"Body: {body}")
     print("-----------------------")
+    
+def read_email(email_id):
+    """
+    Returns one fake email from the synthetic inbox.
+    """
+
+    for email in FAKE_EMAILS:
+        if email["id"] == email_id:
+            return email
+
+    return "Email not found."    
