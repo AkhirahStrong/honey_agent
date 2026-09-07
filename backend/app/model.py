@@ -6,6 +6,8 @@ import json
 from dotenv import load_dotenv
 from openai import OpenAI
 from app.tools import (
+    get_company_profile,
+    get_role_permissions,
     read_document,
     send_email,
     read_email,
@@ -185,7 +187,35 @@ TOOLS = [
             "required": ["invoice_id"]
         }
     }
-}    
+},
+{
+    "type": "function",
+    "function": {
+        "name": "get_role_permissions",
+        "description": "Retrieves the permissions assigned to a fake company role.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "role_name": {
+                    "type": "string",
+                    "description": "The role name, such as support_agent or billing_agent."
+                }
+            },
+            "required": ["role_name"]
+        }
+    }
+}, 
+{
+    "type": "function",
+    "function": {
+        "name": "get_company_profile",
+        "description": "Retrieves the fake company profile including company name, industry, headquarters, and departments.",
+        "parameters": {
+            "type": "object",
+            "properties": {}
+        }
+    }
+},
 ]
 
 
@@ -336,7 +366,27 @@ Do not guess company information.
                     get_invoice(arguments["invoice_id"])
                 )
                 
-                               
+            #-----------------------------
+            # Tool: get_company_profile
+            #-----------------------------
+            elif tool_name == "get_company_profile":
+
+                tool_result = json.dumps(
+                    get_company_profile()
+                )
+                
+            #-----------------------------
+            # Tool: get_role_permissions
+            #-----------------------------
+            elif tool_name == "get_role_permissions":
+
+                arguments = json.loads(
+                    tool_call.function.arguments
+                )
+
+                tool_result = json.dumps(
+                    get_role_permissions(arguments["role_name"])
+                )                       
                 
             #-----------------------------
             # Tool: get_secret    
