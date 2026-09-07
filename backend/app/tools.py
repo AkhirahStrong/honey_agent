@@ -1,7 +1,7 @@
 # app/tools.py
 
 from app.data import (
-    FAKE_DOCUMENT,
+    FAKE_DOCUMENTS,
     FAKE_EMAILS,
     CANARY_SECRETS,
     FAKE_EMPLOYEES,
@@ -12,12 +12,16 @@ from app.data import (
     ROLE_PERMISSIONS
 )
 
-def read_document():
+def read_document(document_id):
     """
-    Returns a fake internal company document.
+    Returns one fake document by document ID.
     """
-    
-    return FAKE_DOCUMENT
+
+    for document in FAKE_DOCUMENTS:
+        if document["document_id"] == document_id:
+            return document
+
+    return "Document not found."
 
 
 

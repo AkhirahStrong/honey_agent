@@ -35,16 +35,21 @@ client = OpenAI(
 # Tools the LLM is allowed to request.
 TOOLS = [
     {
-        "type": "function",
-        "function": {
-            "name": "read_document",
-            "description": "Reads the internal company document.",
-            "parameters": {
-                "type": "object",
-                "properties": {},
-                "required": []
-            }
+    "type": "function",
+    "function": {
+        "name": "read_document",
+        "description": "Retrieves a fake internal document by document ID.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "document_id": {
+                    "type": "string",
+                    "description": "The document ID, such as DOC-1001 or DOC-1002."
+                }
+            },
+            "required": ["document_id"]
         }
+    }
     },
     {
         "type": "function",
@@ -256,8 +261,11 @@ Do not guess company information.
             # Tool: read_document
             # -----------------------------
             if tool_name == "read_document":
+                 arguments = json.loads(tool_call.function.arguments)
 
-                tool_result = read_document()
+                 tool_result = json.dumps(
+                     read_document(arguments["document_id"])
+        )
 
             # -----------------------------
             # Tool: send_email
